@@ -1,0 +1,5 @@
+# Entrega primaria con fixture base.
+SCENARIO example-direct
+PACKET pkt-example-direct edge core alice merchant 101 100000000 50000 10 release
+DELIVER pkt-example-direct edge-direct 1
+

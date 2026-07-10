@@ -1,0 +1,12 @@
+{
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.exclude": {
+        "dist": true,
+        "node_modules": true
+    },
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.includePath": ["${workspaceFolder}/src"]
+}

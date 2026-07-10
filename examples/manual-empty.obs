@@ -1,0 +1,12 @@
+# Fixture manual sin dominios predefinidos.
+EMPTY
+SCENARIO example-manual-empty
+DOMAIN branch Branch 1000000
+DOMAIN hub Hub 500000
+ACCOUNT operator Operator 0
+ACCOUNT receiver Receiver 0
+ACCOUNT relay Relay 0
+ROUTE branch-direct branch branch hub relay 25 10 1 1
+PACKET pkt-branch branch hub operator receiver 1 1000 25 10 release
+DELIVER pkt-branch branch-direct 1
+

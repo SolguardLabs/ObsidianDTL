@@ -1,0 +1,19 @@
+{
+  "name": "obsidian-dtl",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Relayer DTL en C con tests de integracion en Node.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test --test-concurrency=1 \"tests/node/*.test.js\"",
+    "fmt:check": "node scripts/check-format.mjs",
+    "ci": "npm run fmt:check && npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
+}

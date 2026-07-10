@@ -1,0 +1,6 @@
+# Rechazo esperado por expiracion.
+SCENARIO example-expiry
+PACKET pkt-example-expiry edge core alice merchant 103 125000000 60000 2 release
+ADVANCE 3
+TRY_DELIVER pkt-example-expiry edge-direct 0
+

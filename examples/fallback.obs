@@ -1,0 +1,5 @@
+# Entrega por ruta secundaria autorizada.
+SCENARIO example-fallback
+PACKET pkt-example-fallback edge core alice merchant 102 125000000 60000 10 release
+DELIVER pkt-example-fallback edge-fallback 2
+
