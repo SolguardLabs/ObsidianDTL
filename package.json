@@ -6,7 +6,7 @@
   "description": "Relayer DTL en C con tests de integracion en Node.",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --test --test-concurrency=1 \"tests/node/*.test.js\"",
+    "test": "node --test --test-concurrency=1 tests/node/*.test.js",
     "fmt:check": "node scripts/check-format.mjs",
     "ci": "npm run fmt:check && npm run build && npm test"
   },

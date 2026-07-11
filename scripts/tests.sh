@@ -5,4 +5,4 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 node scripts/build.mjs
-node --test --test-concurrency=1 "tests/node/*.test.js"
+node --test --test-concurrency=1 tests/node/*.test.js

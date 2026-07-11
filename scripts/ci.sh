@@ -6,4 +6,4 @@ cd "$ROOT_DIR"
 
 node scripts/check-format.mjs
 node scripts/build.mjs
-node --test --test-concurrency=1 "tests/node/*.test.js"
+node --test --test-concurrency=1 tests/node/*.test.js
