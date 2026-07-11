@@ -35,9 +35,10 @@ function run(command, args, options = {}) {
 }
 
 function findOnPath(name) {
-  const probe = process.platform === "win32" ? "where.exe" : "command";
-  const args = process.platform === "win32" ? [name] : ["-v", name];
-  const result = run(probe, args, { capture: true });
+  const result =
+    process.platform === "win32"
+      ? run("where.exe", [name], { capture: true })
+      : run("sh", ["-lc", `command -v ${name}`], { capture: true });
   if (result.status === 0) {
     return result.stdout.split(/\r?\n/).find(Boolean)?.trim() ?? null;
   }
