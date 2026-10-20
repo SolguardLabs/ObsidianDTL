@@ -1,4 +1,4 @@
-# Scripting Reference
+# Referencia de scripting
 
 El modo `script` permite construir escenarios reproducibles sin recompilar el
 runner. Cada linea contiene un comando y argumentos separados por espacios. Las
@@ -12,7 +12,7 @@ El reporte final siempre se emite en JSON por `stdout`. Los errores de parseo,
 configuracion o entrega se emiten por `stderr` y devuelven codigo de salida no
 cero, salvo cuando se usa `TRY_DELIVER`.
 
-## Ciclo De Vida
+## Ciclo de vida
 
 Por defecto, un script arranca con el fixture base:
 
@@ -32,7 +32,7 @@ Para limpiar todo el fixture se usa `EMPTY`.
 
 ```text
 EMPTY
-SCENARIO laboratorio-manual
+SCENARIO mesa-manual
 DOMAIN branch Branch 1000000
 DOMAIN hub Hub 500000
 ACCOUNT operator Operator 0

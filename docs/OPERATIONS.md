@@ -1,10 +1,10 @@
-# Operational Runbook
+# Guía de operación
 
 Este runbook describe como revisar ObsidianDTL como servicio local de relaying.
 El objetivo es que un auditor pueda compilar, ejecutar escenarios, comparar
 reportes y aislar cambios contables sin depender de infraestructura externa.
 
-## Preparacion
+## Preparación
 
 Verificar Node:
 
@@ -44,7 +44,7 @@ Salida esperada:
 El script escribe objetos intermedios en `dist/`. Esta carpeta esta ignorada por
 git y puede eliminarse sin afectar fuentes.
 
-## Smoke Tests Manuales
+## Comprobaciones manuales
 
 Ejecutar snapshot:
 
@@ -85,7 +85,7 @@ Comprobar:
 - `last_rejection` describe expiracion;
 - el balance del beneficiario no cambia.
 
-## Suite Automatizada
+## Suite automatizada
 
 ```bash
 npm test
@@ -106,7 +106,7 @@ Incluye:
 - build del binario C;
 - tests de integracion.
 
-## Lectura Del Reporte
+## Lectura del reporte
 
 Campos principales:
 
@@ -123,7 +123,7 @@ Campos principales:
 - `conservation_ok`: conservacion global de suministro.
 - `state_digest`: digest final reproducible.
 
-## Comparacion De Reportes
+## Comparación de reportes
 
 Para guardar un reporte:
 
@@ -140,7 +140,7 @@ node -e "console.log(require('./direct.json').state_digest)"
 Si un cambio legitimo altera balances, receipts o rutas, el digest tambien debe
 cambiar. Si solo cambia texto de documentacion, el digest no cambia.
 
-## Escenarios Externos
+## Escenarios externos
 
 Ejecutar un ejemplo:
 
@@ -159,18 +159,15 @@ TRY_DELIVER pkt-paused edge-paused 0
 
 El reporte debe indicar un rechazo de politica y `conservation_ok = true`.
 
-## Checklist De Auditoria
+## Lista de revisión operativa
 
 - Compilar desde limpio.
 - Ejecutar `npm run ci`.
 - Revisar que no haya servicios externos.
-- Confirmar que `vulnerability.md` esta en `.gitignore`.
 - Revisar rutas registradas en el fixture.
-- Revisar orden de validaciones en `transfer.c`.
-- Revisar ventanas de nonce en `nonce.c`.
-- Revisar seleccion de rutas y quotes en `routing.c`.
-- Revisar campos incluidos en `obs_packet_digest`.
-- Revisar campos incluidos en `obs_receipt_digest`.
+- Revisar parámetros de ruta, límites temporales y configuración de dominio.
+- Contrastar packets, receipts y eventos de cada operación.
+- Verificar que los digests cambian al modificar una instrucción o su ruta.
 - Crear al menos un script manual con `EMPTY`.
 - Crear al menos un script negativo con `TRY_DELIVER`.
 - Verificar balances antes y despues de cada entrega.
@@ -178,18 +175,8 @@ El reporte debe indicar un rechazo de politica y `conservation_ok = true`.
 - Verificar que receipts tardios quedan marcados.
 - Verificar que el digest cambia ante transiciones contables.
 
-## Limpieza
+## Limpieza local
 
-Eliminar artefactos:
-
-```bash
-rm -rf dist
-```
-
-En PowerShell:
-
-```powershell
-Remove-Item -Recurse -Force dist
-```
-
-No eliminar `src/`, `tests/`, `docs/` ni `examples/`.
+`dist/` contiene únicamente objetos y binarios generados y está ignorado por Git.
+Retíralo solo después de confirmar que no necesitas conservar un ejecutable
+para comparar reportes. Mantén `src/`, `tests/`, `docs/` y `examples/`.

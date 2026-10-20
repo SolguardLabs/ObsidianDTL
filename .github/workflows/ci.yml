@@ -3,9 +3,6 @@ name: CI
 on:
   pull_request:
   push:
-    branches:
-      - main
-      - master
   workflow_dispatch:
 
 permissions:
@@ -17,8 +14,12 @@ concurrency:
 
 jobs:
   validate:
-    name: C y Node
-    runs-on: ubuntu-latest
+    name: C y Node (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
     steps:
@@ -32,6 +33,7 @@ jobs:
           cache: npm
 
       - name: Instalar toolchain nativo
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential
@@ -41,5 +43,5 @@ jobs:
         run: npm ci
 
       - name: Ejecutar CI
+        shell: bash
         run: bash scripts/ci.sh
-

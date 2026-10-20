@@ -1,10 +1,10 @@
-# Receipts And Nonce Windows
+# Receipts y ventanas de nonce
 
 Esta nota resume como leer los controles de receipts y ventanas de nonce en el
 runner local. No reemplaza la revision del codigo, pero sirve como mapa para
 auditores que empiezan por los reportes JSON.
 
-## Packet Digest
+## Digest del packet
 
 `obs_packet_digest` cubre los campos economicos del packet:
 
@@ -21,7 +21,7 @@ auditores que empiezan por los reportes JSON.
 
 El digest es determinista y se imprime en `packet_log[].digest`.
 
-## Receipt Digest
+## Digest del receipt
 
 `obs_receipt_digest` cubre:
 
@@ -40,7 +40,7 @@ El digest es determinista y se imprime en `packet_log[].digest`.
 
 El digest se imprime en `receipt_log[].digest`.
 
-## Confirmaciones Tardias
+## Confirmaciones tardías
 
 Una confirmacion se marca como tardia cuando:
 
@@ -50,7 +50,7 @@ Una confirmacion se marca como tardia cuando:
 El receipt puede seguir aceptado si los campos canonicos coinciden. La senal
 `late` sirve para monitoreo operativo y conciliacion posterior.
 
-## Ventanas De Nonce
+## Ventanas de nonce
 
 Cada dominio mantiene:
 
@@ -79,7 +79,7 @@ Un rechazo queda visible en cuatro zonas:
 Los rechazos esperados en scripts deben usar `TRY_DELIVER` para que el runner
 complete el reporte y permita inspeccionar balances.
 
-## Lectura Rapida
+## Lectura rápida
 
 Para una entrega correcta se espera:
 
@@ -90,4 +90,3 @@ Para una entrega correcta se espera:
 - un incremento del relayer;
 - una reduccion del vault de origen;
 - `conservation_ok = true`.
-

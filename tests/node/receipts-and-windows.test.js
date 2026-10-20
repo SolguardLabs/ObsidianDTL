@@ -58,4 +58,3 @@ test("TRY_DELIVER permite scripts con rechazos esperados", () => {
   assert.match(report.last_rejection, /expired/);
   assert.equal(report.conservation_ok, true);
 });
-
