@@ -5,7 +5,11 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const exePath = join(root, "dist", process.platform === "win32" ? "obsidian-dtl.exe" : "obsidian-dtl");
+const exePath = join(
+  root,
+  "dist",
+  process.platform === "win32" ? "obsidian-dtl.exe" : "obsidian-dtl",
+);
 
 let built = false;
 
@@ -48,7 +52,9 @@ export function runScenario(name = "direct") {
     encoding: "utf8",
   });
   if (result.status !== 0) {
-    throw new Error(`scenario ${name} failed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
+    throw new Error(
+      `scenario ${name} failed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`,
+    );
   }
   return JSON.parse(result.stdout);
 }

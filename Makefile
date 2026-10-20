@@ -10,7 +10,7 @@ test:
 	$(NODE) --test "tests/node/*.test.js"
 
 fmt-check:
-	$(NODE) scripts/check-format.mjs
+	$(NPM) run fmt:check
 
 ci: fmt-check build test
 

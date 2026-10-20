@@ -1,85 +1,38 @@
-# Security Model
+# Política de seguridad
 
-ObsidianDTL modela un relayer DTL interno donde los dominios economicos
-mantienen vaults separados y las rutas de transporte estan registradas antes de
-aceptar packets. La suite local no usa claves reales ni red externa; los
-digests canonicos representan las decisiones de vinculacion que un servicio
-productivo delegaria en firmas y receipts firmados.
+## Alcance
 
-## Supuestos
+El alcance revisable incluye el motor C de dominios, rutas, ventanas de nonce, ledger, receipts y parser de scripts; también el builder, el cliente de reportes y las pruebas de integración. La ejecución de referencia usa un fixture en memoria y digests deterministas. No implementa firmas criptográficas ni conectividad con una cadena externa; una integración que añada esas capacidades debe definir su propio modelo de autenticación, custodia de claves y confirmación final.
 
-- Los dominios registrados son entidades internas autorizadas.
-- Las cuentas del fixture representan operadores, relayers y beneficiarios ya
-  conocidos por el sistema.
-- Las rutas solo pueden crearse durante bootstrap o por automatizacion de
-  configuracion aprobada.
-- Los packets deben declarar origen logico, destino, nonce, importe, fee maximo
-  y expiracion.
-- Los receipts deben referenciar el packet, la ruta, el relayer y el digest del
-  packet aceptado.
+## Límites de confianza
 
-## Invariantes Esperadas
+```mermaid
+flowchart TD
+  I[Instrucción de entrada] --> P[Parser / API de packet]
+  C[Configuración de rutas] --> R[Política de transporte]
+  P --> R
+  R --> N[Control temporal y nonce]
+  N --> L[Ledger por dominio]
+  L --> E[Receipt y digest]
+  E --> O[Reporte y cliente de lectura]
+```
 
-- El suministro total agregado se conserva despues de cada escenario.
-- Un packet expirado no produce movimiento contable.
-- Un nonce ya consumido dentro de su ventana operativa no puede contabilizar una
-  segunda entrega por la misma superficie de recepcion.
-- Un receipt solo es aceptado cuando coincide con el digest y los campos
-  canonicos de la entrega.
-- Las rutas inactivas, con destino incorrecto o fee superior al permitido deben
-  rechazarse.
-- Las confirmaciones tardias quedan reflejadas como senal operacional sin
-  invalidar reportes historicos.
+El packet expresa la obligación económica y el envelope de ruta expresa cómo se transporta. Un receipt asocia packet, ruta, relayer y confirmación. La superficie de confianza incluye tanto la configuración previa de rutas como el contenido del packet; el digest determinista sirve para conciliación local, no como sustituto de una firma autenticada.
 
-## Validaciones Automatizadas
+## Propiedades esperadas
 
-La suite `node:test` cubre:
+- Una entrega aceptada respeta dominio, destino, fee máximo, expiración y ruta activa.
+- Las ventanas de nonce rechazan consumos fuera de rango y duplicados según la política configurada.
+- Un rechazo no transfiere fondos y queda visible en el reporte.
+- El importe bruto debitado del vault coincide con el neto al beneficiario más el fee del relayer.
+- Los receipts aceptados están vinculados a la instrucción y ruta que documentan.
+- El suministro agregado se conserva en los flujos nominales; esta propiedad no reemplaza la conciliación por dominio y cuenta.
+- El cliente de reportes nunca muta estado y rechaza magnitudes JSON fuera de la precisión segura de JavaScript.
 
-- bootstrap de dominios, cuentas y rutas;
-- liquidacion primaria;
-- ruta fallback autorizada;
-- packets expirados;
-- entrega duplicada sobre una ruta;
-- confirmacion tardia;
-- escenarios externos por script.
+## Verificación
 
-Los tests ejecutan el binario compilado y consumen su JSON publico. Esto evita
-que la suite valide un modelo paralelo diferente al runner C.
+`npm run ci` ejecuta chequeos de formato, build C y pruebas `node:test`. GitHub Actions repite el script en Linux y Windows; Dependabot revisa npm y Actions. Los tests públicos cubren rutas nominales, fallback autorizado, expiración, rechazo, receipts y lectura de reportes. La suite no equivale a una auditoría formal ni cubre transportes o firmantes externos no presentes en este código.
 
-## Gestion De Dependencias
+## Reporte responsable
 
-El proyecto no tiene dependencias runtime de npm. Node se usa para scripts de
-build, checks y tests. `prettier` queda como dependencia de desarrollo para
-repositorios que quieran aplicar formato sobre Markdown, YAML o JavaScript.
-
-Dependabot revisa:
-
-- `npm`;
-- `github-actions`.
-
-## Alcance De Revision
-
-Areas recomendadas para auditoria:
-
-- vinculacion canonica entre packets, rutas y receipts;
-- ventanas de nonce por dominio;
-- orden de validacion y aplicacion contable;
-- manejo de expiraciones y confirmaciones tardias;
-- consistencia de reportes JSON y digest final;
-- scripts externos con comandos `ROUTE`, `PACKET` y `DELIVER`.
-
-## Reporte Interno
-
-Los hallazgos deben incluir:
-
-- escenario minimo reproducible;
-- packet, ruta y receipt implicados;
-- balances antes y despues;
-- contador o digest afectado;
-- severidad economica;
-- propuesta de test de regresion.
-
-No se deben usar claves, endpoints ni datos productivos para reproducir
-escenarios. Todo el analisis esperado puede hacerse con el fixture local o con
-scripts `.obs` creados especificamente para revision.
-
+Evita publicar detalles sensibles en issues. Un reporte debe incluir commit, estado inicial, entradas reproducibles, ruta, resultado contable, balances antes/después, impacto y corrección propuesta. Usa el canal privado de seguridad de GitHub cuando esté habilitado o coordina directamente con el propietario antes de divulgar detalles. No adjuntes claves ni datos de terceros.

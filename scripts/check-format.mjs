@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const include = ["src", "tests", "scripts"];
+const include = ["src", "tests", "scripts", "client"];
 const allowed = new Set([".c", ".h", ".js", ".mjs"]);
 const failures = [];
 
@@ -46,4 +46,3 @@ if (failures.length > 0) {
 }
 
 console.log("format checks passed");
-

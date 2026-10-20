@@ -1,16 +1,16 @@
 # ObsidianDTL
 
-![banner](./assets/banner.png)
+![ObsidianDTL](./assets/banner.png)
 
-ObsidianDTL es un relayer DTL escrito en C para transportar mensajes
-economicos entre dominios internos. El runner local modela rutas primarias y de
-fallback, receipts de confirmacion, ventanas de nonce, proteccion contra
-duplicados y reportes JSON deterministas para integracion con herramientas de
-auditoria.
+ObsidianDTL es un relayer DTL escrito en C para transportar instrucciones
+económicas entre dominios. El runner modela rutas primarias y alternativas,
+recibos de confirmación, ventanas de nonce, control de duplicados y reportes
+JSON deterministas para conciliación e integración.
 
-El proyecto esta pensado como un servicio autocontenido. No requiere nodos
-externos, bases de datos ni claves reales: los fixtures cargan dominios,
-cuentas, rutas y packets reproducibles dentro del proceso.
+El servicio es autocontenido: las ejecuciones de referencia cargan dominios,
+cuentas, rutas y packets en memoria y no requieren nodos ni bases de datos
+externas. El repositorio describe un artefacto de código; no certifica un
+despliegue operativo externo.
 
 ## Componentes
 
@@ -25,6 +25,8 @@ cuentas, rutas y packets reproducibles dentro del proceso.
 - `src/script.c`: parser de escenarios externos en formato lineal.
 - `src/report.c`: serializacion JSON para tests y consumidores externos.
 - `tests/node`: tests de integracion que ejecutan el binario compilado.
+- `client/report-client.mjs`: proyección de liquidez, fees y disponibilidad de
+  rutas a partir de reportes JSON, sin modificar el ledger.
 - `scripts/build.mjs`: compilacion portable con GCC, Clang o MSVC.
 - `docs/`: runbook operativo, referencia de scripting y notas de receipts.
 - `examples/`: scripts `.obs` pequenos para pruebas manuales.
@@ -54,6 +56,24 @@ El runner ejecuta cada entrega en cinco fases:
 4. aplicacion contable sobre el dominio de origen y cuentas receptoras;
 5. emision de receipt y digest de estado.
 
+```mermaid
+flowchart LR
+  P[Packet canónico] --> R[Selección de ruta]
+  R --> V[Validaciones de política y tiempo]
+  V --> N[Ventana de nonce]
+  N --> L[Movimiento del ledger]
+  L --> C[Receipt y digest]
+  C --> J[Reporte JSON]
+  J --> I[Cliente de lectura]
+```
+
+En una entrega nominal de 1 000 000 000 unidades con fee de 20 000, el vault
+del dominio de origen se reduce en 1 000 000 000, el beneficiario recibe
+999 980 000 y el relayer 20 000. Las magnitudes son enteros sin decimales
+implícitos; `conservation_ok` verifica que el total global se conserva. El
+digest del packet vincula la instrucción económica y el receipt documenta la
+ruta efectivamente utilizada.
+
 ## Escenarios CLI
 
 El binario acepta un escenario opcional:
@@ -80,6 +100,17 @@ Cada escenario devuelve JSON con:
 - packet log y receipt log;
 - conservacion de suministro;
 - digest final de estado.
+
+Para obtener una vista resumida sin cambiar el reporte original:
+
+```bash
+dist/obsidian-dtl direct > direct.json
+npm run inspect -- direct.json
+```
+
+El cliente calcula utilización de liquidez por dominio y tasa de entregas por
+ruta. Rechaza importes JSON mayores que el entero seguro de JavaScript; para
+libros mayores se requiere un parser de enteros de precisión arbitraria.
 
 ## Scripts De Escenario
 
@@ -166,8 +197,19 @@ El workflow de GitHub Actions ejecuta:
 
 Dependabot revisa dependencias npm y GitHub Actions semanalmente.
 
-## Estado Del Proyecto
+El workflow valida Linux y Windows en pushes y PR. La publicación estable
+comprueba además que `main`, `production` y el tag anotado `v1.0.0` resuelven
+al mismo commit.
 
-ObsidianDTL es un laboratorio tecnico autocontenido. El estado de protocolo se
-genera localmente desde fixtures deterministas y los reportes JSON son estables
-para comparaciones en revisiones, CI y herramientas externas.
+## Documentación y versión
+
+- [Arquitectura](docs/ARQUITECTURA.md)
+- [Modelo económico](docs/MODELO_ECONOMICO.md)
+- [Operación](docs/OPERATIONS.md)
+- [Receipts y nonces](docs/RECEIPTS.md)
+- [Formato de scripts](docs/SCRIPTING.md)
+- [Política de seguridad](SECURITY.md)
+- [Historial de cambios](CHANGELOG.md)
+
+`Production 1.0.0` nombra el release del código y no implica un despliegue en
+una red externa.
